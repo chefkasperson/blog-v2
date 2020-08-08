@@ -14,6 +14,13 @@ const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rho
 
 const app = express();
 
+const postSchema = new mongoose.Schema({
+  title: String,
+  content: String
+})
+
+const Post = mongoose.model("Post", postSchema)
+
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
