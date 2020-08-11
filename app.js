@@ -14,14 +14,14 @@ const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rho
 
 const app = express();
 
+app.set('view engine', 'ejs')
+
 const postSchema = new mongoose.Schema({
   title: String,
   content: String
 })
 
 const Post = mongoose.model("Post", postSchema)
-
-app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
@@ -53,26 +53,23 @@ app.post("/compose", function(req, res){
     content: req.body.postBody
   };
 
-  posts.push(post);
-
-  res.redirect("/");
+  post.save(function(err){
+    if (!err) {
+      res.redirect('/')
+    }
+  })
 
 });
 
-app.get("/posts/:postName", function(req, res){
-  const requestedTitle = _.lowerCase(req.params.postName);
+app.get("/posts/:postId", function(req, res){
+  const requestedPostId = req.params.postId;
 
-  posts.forEach(function(post){
-    const storedTitle = _.lowerCase(post.title);
-
-    if (storedTitle === requestedTitle) {
-      res.render("post", {
-        title: post.title,
-        content: post.content
-      });
-    }
-  });
-
+  Post.findOne({_id: requestedPostId}, function(err, post) {
+    res.render("post", {
+      title: post.title,
+      content: post.content
+    })
+  })
 });
 
 app.listen(3000, function() {
